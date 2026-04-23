@@ -6,7 +6,7 @@
 /*   By: asmounci <asmounci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/19 15:08:00 by asmounci          #+#    #+#             */
-/*   Updated: 2026/04/23 16:15:20 by asmounci         ###   ########.fr       */
+/*   Updated: 2026/04/23 18:35:29 by asmounci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <string.h>
+# include <pthread.h>
 
-int	is_valid_number(char *str);
-int	is_valid_scheduler(char *str);
+typedef struct s_sim t_sim;
 
 typedef struct s_params {
     int number_of_coders;
@@ -36,22 +36,37 @@ typedef struct s_request
     int coder_id;
     long arrival_time;
     long deadline;
-    struct s_request *next;
 } t_request;
-
 
 typedef struct s_dongle {
     pthread_mutex_t mutex;
     pthread_cond_t  cond;
     long last_release_time;
-    t_request *queue;
+    int in_use;
+    t_request *heap;
+    int heap_size;
+    int heap_capacity;
 } t_dongle;
 
 typedef struct s_coder {
-        
-
-    
+    int id;
+    int nb_compiles;
+    long last_compile_time;
+    pthread_t thread;
+    t_sim *sim;
 } t_coder;
 
+typedef struct s_sim {
+    t_params params;
+    t_coder *coders;
+    t_dongle *dongles;
+    int stop;
+    long start_time;
+    pthread_t monitor;
+    pthread_mutex_t log_mutex;
+} t_sim;
+
+int	is_valid_number(char *str);
+int	is_valid_scheduler(char *str);
 
 #endif
