@@ -17,6 +17,7 @@
 # include <stdlib.h>
 # include <string.h>
 # include <pthread.h>
+# include <sys/time.h>
 
 typedef struct s_sim t_sim;
 
@@ -46,6 +47,7 @@ typedef struct s_dongle {
     t_request *heap;
     int heap_size;
     int heap_capacity;
+    int initialized;
 } t_dongle;
 
 typedef struct s_coder {
@@ -64,9 +66,13 @@ typedef struct s_sim {
     long start_time;
     pthread_t monitor;
     pthread_mutex_t log_mutex;
+    int log_mutex_initialized;
 } t_sim;
 
 int	is_valid_number(char *str);
 int	is_valid_scheduler(char *str);
+long get_time_ms(void);
+int init_sim(t_sim *sim, char **av);
+void cleanup_sim(t_sim *sim);
 
 #endif
