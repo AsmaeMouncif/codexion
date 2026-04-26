@@ -1,6 +1,6 @@
-*This project has been created as part of the 42 curriculum by asmounci.*
+*This project has been created as part of the 42 curriculum by <asmounci>.*
 
-# Codexion
+# Codexion 🧵
 
 ## Description
 
@@ -27,14 +27,14 @@ make
 ```
 
 **Arguments:**
-- `number_of_coders` — number of coders and dongles
-- `time_to_burnout` — max time (ms) between two compile starts before burnout
-- `time_to_compile` — time (ms) spent compiling (holds 2 dongles)
-- `time_to_debug` — time (ms) spent debugging
-- `time_to_refactor` — time (ms) spent refactoring
-- `number_of_compiles_required` — simulation stops when all coders reach this count
-- `dongle_cooldown` — time (ms) a dongle is unavailable after being released
-- `scheduler` — arbitration policy: `fifo` or `edf`
+- `number_of_coders` — number of coders sitting in the circular hub (also equals the number of dongles on the table)
+- `time_to_burnout` — max time (ms) a coder can go without starting a compile before burning out
+- `time_to_compile` — time (ms) spent compiling; coder must hold 2 dongles during this phase
+- `time_to_debug` — time (ms) spent debugging after each compile
+- `time_to_refactor` — time (ms) spent refactoring; coder immediately attempts to compile again after this phase
+- `number_of_compiles_required` — simulation stops when every coder has compiled at least this many times
+- `dongle_cooldown` — time (ms) a dongle remains unavailable after being released
+- `scheduler` — arbitration policy for dongle access: `fifo` (first come first served) or `edf` (earliest deadline first)
 
 **Example:**
 ```bash
