@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   codexion.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asmounci <asmounci@student.42.fr>          +#+  +:+       +#+        */
+/*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/19 15:08:00 by asmounci          #+#    #+#             */
-/*   Updated: 2026/04/23 18:35:29 by asmounci         ###   ########.fr       */
+/*   Updated: 2026/04/25 16:02:48 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <string.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <stdio.h>
 
 typedef struct s_sim t_sim;
 
@@ -71,8 +72,17 @@ typedef struct s_sim {
 
 int	is_valid_number(char *str);
 int	is_valid_scheduler(char *str);
-long get_time_ms(void);
 int init_sim(t_sim *sim, char **av);
 void cleanup_sim(t_sim *sim);
+long get_time_ms(void);
+void sleep_ms(long ms);
+void log_state(t_sim *sim, int id, char *msg);
+void heap_push(t_dongle *dongle, t_request req, char *scheduler);
+void heap_pop(t_dongle *dongle, char *scheduler);
+t_request heap_peek(t_dongle *dongle);
+void dongle_acquire(t_sim *sim, int coder_id, int dongle_id);
+void dongle_release(t_sim *sim, int dongle_id);
+void *coder_routine(void *arg);
+void *monitor_routine(void *arg);
 
 #endif

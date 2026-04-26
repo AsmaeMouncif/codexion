@@ -1,4 +1,5 @@
 
+# include "codexion.h"
 
 long get_time_ms(void)
 {
@@ -6,4 +7,9 @@ long get_time_ms(void)
 
     gettimeofday(&tv, NULL);
     return (tv.tv_sec * 1000L) + (tv.tv_usec / 1000);
+}
+
+void sleep_ms(long ms)
+{
+    usleep(ms * 1000);
 }
