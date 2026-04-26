@@ -107,6 +107,8 @@ The mutex ensures the monitor always reads a consistent value.
 
 ## Resources
 
+- **Starting point** — Dining Philosophers visual explanation (YouTube): https://youtu.be/R7tPuETDC5c?si=xgk0kWUL3g5X0sAf
+  *(used at the beginning to understand the core problem before coding)*
 - POSIX Threads documentation: https://man7.org/linux/man-pages/man7/pthreads.7.html
 - The Dining Philosophers problem: Dijkstra, E.W. (1971)
 - `pthread_cond_timedwait` man page: https://man7.org/linux/man-pages/man3/pthread_cond_timedwait.3p.html
