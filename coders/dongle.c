@@ -1,10 +1,15 @@
 
 # include "codexion.h"
+# include <time.h>
 
 void dongle_acquire(t_sim *sim, int coder_id, int dongle_id)
 {
     t_dongle *d = &sim->dongles[dongle_id];
     t_request req;
+    struct timespec ts;
+    long wake_ms;
+    long release_time;
+    int stopped;
 
     req.coder_id = coder_id;
     req.arrival_time = get_time_ms();
@@ -15,16 +20,33 @@ void dongle_acquire(t_sim *sim, int coder_id, int dongle_id)
 
     heap_push(d, req, sim->params.scheduler);
 
-    while (sim->stop == 0 &&
+    /* Check stop flag once before loop, avoid nested locks */
+    pthread_mutex_lock(&sim->stop_mutex);
+    stopped = sim->stop;
+    pthread_mutex_unlock(&sim->stop_mutex);
+
+    while (stopped == 0 &&
           (d->in_use == 1 ||
            (d->last_release_time > 0 &&
             get_time_ms() - d->last_release_time < sim->params.dongle_cooldown) ||
            heap_peek(d).coder_id != coder_id))
     {
-        pthread_cond_wait(&d->cond, &d->mutex);
+        release_time = d->last_release_time;
+        if (release_time > 0)
+            wake_ms = release_time + sim->params.dongle_cooldown + 1;
+        else
+            wake_ms = get_time_ms() + 1;
+        ts.tv_sec = wake_ms / 1000;
+        ts.tv_nsec = (wake_ms % 1000) * 1000000L;
+        pthread_cond_timedwait(&d->cond, &d->mutex, &ts);
+
+        /* Check stop flag again after timedwait */
+        pthread_mutex_lock(&sim->stop_mutex);
+        stopped = sim->stop;
+        pthread_mutex_unlock(&sim->stop_mutex);
     }
 
-    if (sim->stop == 1)
+    if (stopped)
     {
         pthread_mutex_unlock(&d->mutex);
         return;

@@ -4,11 +4,13 @@ static void stop_sim(t_sim *sim)
 {
     int i;
 
-    sim->stop = 1;
+    sim_set_stop(sim, 1);
     i = 0;
     while (i < sim->params.number_of_coders)
     {
+        pthread_mutex_lock(&sim->dongles[i].mutex);
         pthread_cond_broadcast(&sim->dongles[i].cond);
+        pthread_mutex_unlock(&sim->dongles[i].mutex);
         i++;
     }
 }
@@ -17,14 +19,15 @@ static int check_burnout(t_sim *sim)
 {
     int i;
     long now;
+    long last_compile;
 
     i = 0;
     while (i < sim->params.number_of_coders)
     {
         now = get_time_ms();
+        last_compile = coder_get_last_compile_time(&sim->coders[i]);
 
-        if (now - sim->coders[i].last_compile_time
-            > sim->params.time_to_burnout)
+        if (now - last_compile > sim->params.time_to_burnout)
         {
             log_state(sim, sim->coders[i].id, "burned out");
             stop_sim(sim);
@@ -38,6 +41,7 @@ static int check_burnout(t_sim *sim)
 static int check_compiles(t_sim *sim)
 {
     int i;
+    int nb_compiles;
 
     if (sim->params.number_of_compiles_required < 0)
         return (0);
@@ -45,8 +49,8 @@ static int check_compiles(t_sim *sim)
     i = 0;
     while (i < sim->params.number_of_coders)
     {
-        if (sim->coders[i].nb_compiles
-            < sim->params.number_of_compiles_required)
+        nb_compiles = coder_get_nb_compiles(&sim->coders[i]);
+        if (nb_compiles < sim->params.number_of_compiles_required)
             return (0);
         i++;
     }
@@ -58,10 +62,15 @@ static int check_compiles(t_sim *sim)
 void *monitor_routine(void *arg)
 {
     t_sim *sim;
+    int stopped;
 
     sim = (t_sim *)arg;
 
-    while (sim->stop == 0)
+    pthread_mutex_lock(&sim->stop_mutex);
+    stopped = sim->stop;
+    pthread_mutex_unlock(&sim->stop_mutex);
+
+    while (stopped == 0)
     {
         if (check_burnout(sim))
             return (NULL);
@@ -70,6 +79,10 @@ void *monitor_routine(void *arg)
             return (NULL);
 
         sleep_ms(1);
+
+        pthread_mutex_lock(&sim->stop_mutex);
+        stopped = sim->stop;
+        pthread_mutex_unlock(&sim->stop_mutex);
     }
     return (NULL);
 }

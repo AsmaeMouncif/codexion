@@ -12,6 +12,7 @@ void *coder_routine(void *arg)
     t_sim      *sim;
     int        left;
     int        right;
+    int        stopped;
 
     c = (t_coder *)arg;
     sim = c->sim;
@@ -31,20 +32,32 @@ void *coder_routine(void *arg)
         right = c->id - 1;
     }
 
-    while (sim->stop == 0)
+    pthread_mutex_lock(&sim->stop_mutex);
+    stopped = sim->stop;
+    pthread_mutex_unlock(&sim->stop_mutex);
+
+    while (stopped == 0)
     {
         dongle_acquire(sim, c->id, left);
-        if (sim->stop)
+
+        pthread_mutex_lock(&sim->stop_mutex);
+        stopped = sim->stop;
+        pthread_mutex_unlock(&sim->stop_mutex);
+        if (stopped)
             return (dongle_release(sim, left), NULL);
 
         dongle_acquire(sim, c->id, right);
-        if (sim->stop)
+
+        pthread_mutex_lock(&sim->stop_mutex);
+        stopped = sim->stop;
+        pthread_mutex_unlock(&sim->stop_mutex);
+        if (stopped)
             return (release_both(sim, left, right), NULL);
 
         log_state(sim, c->id, "is compiling");
 
-        c->last_compile_time = get_time_ms();
-        c->nb_compiles++;
+        coder_set_last_compile_time(c, get_time_ms());
+        coder_inc_nb_compiles(c);
 
         sleep_ms(sim->params.time_to_compile);
 
@@ -55,6 +68,10 @@ void *coder_routine(void *arg)
 
         log_state(sim, c->id, "is refactoring");
         sleep_ms(sim->params.time_to_refactor);
+
+        pthread_mutex_lock(&sim->stop_mutex);
+        stopped = sim->stop;
+        pthread_mutex_unlock(&sim->stop_mutex);
     }
 
     return (NULL);

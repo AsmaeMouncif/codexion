@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/19 15:11:13 by asmounci          #+#    #+#             */
-/*   Updated: 2026/04/26 08:24:25 by codespace        ###   ########.fr       */
+/*   Updated: 2026/04/26 09:16:57 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static int  launch_threads(t_sim *sim)
         if (pthread_create(&sim->coders[i].thread, NULL,
                 coder_routine, &sim->coders[i]) != 0)
         {
-            sim->stop = 1;
+            sim_set_stop(sim, 1);
             while (i < sim->params.number_of_coders)
                 pthread_cond_broadcast(&sim->dongles[i++].cond);
             return (1);
@@ -31,7 +31,7 @@ static int  launch_threads(t_sim *sim)
     }
     if (pthread_create(&sim->monitor, NULL, monitor_routine, sim) != 0)
     {
-        sim->stop = 1;
+        sim_set_stop(sim, 1);
         i = 0;
         while (i < sim->params.number_of_coders)
             pthread_cond_broadcast(&sim->dongles[i++].cond);

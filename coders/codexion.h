@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/19 15:08:00 by asmounci          #+#    #+#             */
-/*   Updated: 2026/04/25 16:02:48 by codespace        ###   ########.fr       */
+/*   Updated: 2026/04/26 09:15:36 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ typedef struct s_coder {
     long last_compile_time;
     pthread_t thread;
     t_sim *sim;
+    pthread_mutex_t mutex;
 } t_coder;
 
 typedef struct s_sim {
@@ -68,6 +69,8 @@ typedef struct s_sim {
     pthread_t monitor;
     pthread_mutex_t log_mutex;
     int log_mutex_initialized;
+    pthread_mutex_t stop_mutex;
+    int stop_mutex_initialized;
 } t_sim;
 
 int	is_valid_number(char *str);
@@ -76,6 +79,12 @@ int init_sim(t_sim *sim, char **av);
 void cleanup_sim(t_sim *sim);
 long get_time_ms(void);
 void sleep_ms(long ms);
+int sim_should_stop(t_sim *sim);
+void sim_set_stop(t_sim *sim, int value);
+int coder_get_nb_compiles(t_coder *coder);
+void coder_inc_nb_compiles(t_coder *coder);
+long coder_get_last_compile_time(t_coder *coder);
+void coder_set_last_compile_time(t_coder *coder, long time);
 void log_state(t_sim *sim, int id, char *msg);
 void heap_push(t_dongle *dongle, t_request req, char *scheduler);
 void heap_pop(t_dongle *dongle, char *scheduler);

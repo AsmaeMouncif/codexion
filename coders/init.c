@@ -6,7 +6,7 @@
 /*   By: codespace <codespace@student.42.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/23 18:18:41 by asmounci          #+#    #+#             */
-/*   Updated: 2026/04/24 20:00:24 by codespace        ###   ########.fr       */
+/*   Updated: 2026/04/26 09:16:04 by codespace        ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ static int init_coders(t_sim *sim)
         sim->coders[i].nb_compiles = 0;
         sim->coders[i].last_compile_time = sim->start_time;
         sim->coders[i].sim = sim;
+        if (pthread_mutex_init(&sim->coders[i].mutex, NULL))
+            return (1);
         i++;
     }
     return (0);
@@ -74,7 +76,15 @@ void cleanup_sim(t_sim *sim)
     if (sim == NULL)
         return;
     if (sim->coders != NULL)
+    {
+        i = 0;
+        while (i < sim->params.number_of_coders)
+        {
+            pthread_mutex_destroy(&sim->coders[i].mutex);
+            i++;
+        }
         free(sim->coders);
+    }
     if (sim->dongles != NULL)
     {
         i = 0;
@@ -92,6 +102,8 @@ void cleanup_sim(t_sim *sim)
     }
     if (sim->log_mutex_initialized)
         pthread_mutex_destroy(&sim->log_mutex);
+    if (sim->stop_mutex_initialized)
+        pthread_mutex_destroy(&sim->stop_mutex);
 }
 
 int init_sim(t_sim *sim, char **av)
@@ -109,12 +121,15 @@ int init_sim(t_sim *sim, char **av)
     sim->start_time = get_time_ms();
     sim->stop = 0;
     sim->log_mutex_initialized = 0;
-    if (init_coders(sim) != 0)
+    sim->stop_mutex_initialized = 0;if (init_coders(sim) != 0)
         return (1);
     if (init_dongles(sim) != 0)
         return (cleanup_sim(sim), 1);
     if (pthread_mutex_init(&sim->log_mutex, NULL) != 0)
         return (cleanup_sim(sim), 1);
     sim->log_mutex_initialized = 1;
+    if (pthread_mutex_init(&sim->stop_mutex, NULL) != 0)
+        return (cleanup_sim(sim), 1);
+    sim->stop_mutex_initialized = 1;
     return (0);
 }
