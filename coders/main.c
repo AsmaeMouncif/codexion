@@ -2,7 +2,9 @@
 
 int	main(int ac, char **av)
 {
-	t_coder	*coders;
+	t_coder		*coders;
+	t_dongle	*dongles;
+	int			n;
 
 	if (ac != 9)
 		return (write(2, "Error: invalid number of arguments\n", 35), 1);
@@ -23,9 +25,13 @@ int	main(int ac, char **av)
 		return (write(2, "Error: invalid dongle_cooldown\n", 31), 1);
 	if (!is_valid_scheduler(av[8]))
 		return (write(2, "Error: invalid scheduler\n", 25), 1);
-	coders = init_simulation(av);
+	n = atoi(av[1]);
+	coders = init_coders(n);
 	if (coders == NULL)
 		return (write(2, "Error: malloc failed\n", 21), 1);
-	free(coders);
+	dongles = init_dongles(n);
+	if (dongles == NULL)
+		return (free(coders), write(2, "Error: malloc failed\n", 21), 1);
+	cleanup(coders, dongles, n);
 	return (0);
 }
