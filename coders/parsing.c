@@ -1,6 +1,6 @@
 #include "codexion.h"
 
-int	is_valid_number(char *str)
+int	is_valid_number(char *str, int allow_zero)
 {
 	int	i;
 
@@ -13,9 +13,10 @@ int	is_valid_number(char *str)
 			return (0);
 		i++;
 	}
-	if (atoi(str) <= 0)
-		return (0);
-	return (1);
+	if (allow_zero != 0)
+		return (atoi(str) >= 0);
+	else
+		return (atoi(str) > 0);
 }
 
 int	is_valid_scheduler(char *str)
