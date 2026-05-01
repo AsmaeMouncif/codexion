@@ -2,6 +2,8 @@
 
 int	main(int ac, char **av)
 {
+	t_coder	*coders;
+
 	if (ac != 9)
 		return (write(2, "Error: invalid number of arguments\n", 35), 1);
 	if (!is_valid_number(av[1], 0))
@@ -21,5 +23,9 @@ int	main(int ac, char **av)
 		return (write(2, "Error: invalid dongle_cooldown\n", 31), 1);
 	if (!is_valid_scheduler(av[8]))
 		return (write(2, "Error: invalid scheduler\n", 25), 1);
+	coders = init_simulation(av);
+	if (coders == NULL)
+		return (write(2, "Error: malloc failed\n", 21), 1);
+	free(coders);
 	return (0);
 }
