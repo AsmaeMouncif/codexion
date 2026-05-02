@@ -5,7 +5,8 @@ SRC = coders/main.c     \
 	  coders/args.c     \
       coders/parsing.c  \
 	  coders/init.c     \
-	  coders/cleanup.c
+	  coders/cleanup.c  \
+	  coders/threads.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
