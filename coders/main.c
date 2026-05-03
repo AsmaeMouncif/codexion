@@ -15,7 +15,6 @@ int	main(int ac, char **av)
 	dongles = init_dongles(n);
 	if (dongles == NULL)
 		return (free(coders), write(2, "Error: malloc failed\n", 21), 1);
-	start_threads(coders, n);
 	cleanup(coders, dongles, n);
 	return (0);
 }

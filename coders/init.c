@@ -13,6 +13,8 @@ t_coder	*init_coders(int n)
 	{
 		coders[i].id = i + 1;
 		coders[i].compile_count = 0;
+		coders[i].last_compile_time = 0;
+		coders[i].deadline = 0;
 		i++;
 	}
 	return (coders);
@@ -31,6 +33,7 @@ t_dongle	*init_dongles(int n)
 	{
 		dongles[i].available = 1;
 		pthread_mutex_init(&dongles[i].mutex, NULL);
+		dongles[i].released_at = 0;
 		i++;
 	}
 	return (dongles);

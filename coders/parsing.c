@@ -27,3 +27,21 @@ int	is_valid_scheduler(char *str)
 		return (1);
 	return (0);
 }
+
+t_params	parse_args(char **av)
+{
+	t_params	p;
+
+	p.nb_coders = atoi(av[1]);
+	p.time_to_burnout = atoi(av[2]);
+	p.time_to_compile = atoi(av[3]);
+	p.time_to_debug = atoi(av[4]);
+	p.time_to_refactor = atoi(av[5]);
+	p.nb_compiles_required = atoi(av[6]);
+	p.dongle_cooldown = atoi(av[7]);
+	if (strcmp(av[8], "fifo") == 0)
+		p.scheduler = 0;
+	else
+		p.scheduler = 1;
+	return (p);
+}
