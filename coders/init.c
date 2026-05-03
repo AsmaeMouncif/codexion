@@ -38,3 +38,9 @@ t_dongle	*init_dongles(int n)
 	}
 	return (dongles);
 }
+
+t_sim    *init_sim(char **av)
+{
+	t_sim = *sim;
+	
+}

@@ -5,6 +5,8 @@
 # include <string.h>
 # include <unistd.h>
 # include <pthread.h>
+# include <stdio.h>
+# include <sys/time.h>
 
 typedef struct s_coder
 {
@@ -34,6 +36,16 @@ typedef struct s_params
 	int	scheduler;
 }	t_params;
 
+typedef struct s_sim
+{
+	t_params		params;
+	t_coder			*coders;
+	t_dongle		*dongles;
+	long			start_time;
+	int				stop;
+	pthread_mutex_t	log_mutex;
+}	t_sim;
+
 int			check_args(int ac, char **av);
 int			is_valid_number(char *str, int allow_zero);
 int			is_valid_scheduler(char *str);
@@ -41,5 +53,7 @@ t_params	parse_args(char **av);
 t_coder		*init_coders(int n);
 t_dongle	*init_dongles(int n);
 void		cleanup(t_coder *coders, t_dongle *dongles, int n);
+long		get_time_ms(void);
+void		log_state(long start_time, int id, char *msg);
 
 #endif
