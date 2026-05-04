@@ -6,7 +6,7 @@
 /*   By: asmounci <asmounci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 12:48:34 by asmounci          #+#    #+#             */
-/*   Updated: 2026/05/04 16:24:37 by asmounci         ###   ########.fr       */
+/*   Updated: 2026/05/04 18:12:09 by asmounci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ t_coder		*init_coders(int n);
 t_dongle	*init_dongles(int n);
 void		cleanup(t_coder *coders, t_dongle *dongles, int n);
 long		get_time_ms(void);
-void		log_state(long start_time, int id, char *msg);
+void		log_state(t_sim *sim, int id, char *msg);
 void		*coder_routine(void *arg);
 int			start_simulation(t_sim *sim);
 

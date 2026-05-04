@@ -6,7 +6,7 @@
 /*   By: asmounci <asmounci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 12:48:43 by asmounci          #+#    #+#             */
-/*   Updated: 2026/05/04 12:48:44 by asmounci         ###   ########.fr       */
+/*   Updated: 2026/05/04 18:06:39 by asmounci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,12 @@ long	get_time_ms(void)
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
-void	log_state(long start_time, int id, char *msg)
+void	log_state(t_sim *sim, int id, char *msg)
 {
 	long	timestamp;
 
-	timestamp = get_time_ms() - start_time;
+	pthread_mutex_lock(&sim->log_mutex);
+	timestamp = get_time_ms() - sim->start_time;
 	printf("%ld %d %s\n", timestamp, id, msg);
+	pthread_mutex_unlock(&sim->log_mutex);
 }

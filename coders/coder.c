@@ -6,7 +6,7 @@
 /*   By: asmounci <asmounci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 15:05:29 by asmounci          #+#    #+#             */
-/*   Updated: 2026/05/04 17:04:55 by asmounci         ###   ########.fr       */
+/*   Updated: 2026/05/04 18:18:04 by asmounci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,11 @@ void	*coder_routine(void *arg)
 	sim = coder->sim;
 	while (!sim->stop)
 	{
-		log_state(sim->start_time, coder->id, "is compiling");
+		log_state(sim, coder->id, "is compiling");
 		usleep(sim->params.time_to_compile * 1000);
-		log_state(sim->start_time, coder->id, "is debugging");
+		log_state(sim, coder->id, "is debugging");
 		usleep(sim->params.time_to_debug * 1000);
-		log_state(sim->start_time, coder->id, "refactoring");
+		log_state(sim, coder->id, "is refactoring");
 		usleep(sim->params.time_to_refactor * 1000);
 		coder->compile_count++;
 	}
