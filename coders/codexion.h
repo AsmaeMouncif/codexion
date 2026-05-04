@@ -6,7 +6,7 @@
 /*   By: asmounci <asmounci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 12:48:34 by asmounci          #+#    #+#             */
-/*   Updated: 2026/05/04 12:48:35 by asmounci         ###   ########.fr       */
+/*   Updated: 2026/05/04 16:24:37 by asmounci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@
 # include <stdio.h>
 # include <sys/time.h>
 
+typedef struct s_sim	t_sim;
+
 typedef struct s_coder
 {
 	int			id;
@@ -27,6 +29,7 @@ typedef struct s_coder
 	pthread_t	thread;
 	long		last_compile_time;
 	long		deadline;
+	t_sim		*sim;
 }	t_coder;
 
 typedef struct s_dongle
@@ -67,5 +70,7 @@ t_dongle	*init_dongles(int n);
 void		cleanup(t_coder *coders, t_dongle *dongles, int n);
 long		get_time_ms(void);
 void		log_state(long start_time, int id, char *msg);
+void		*coder_routine(void *arg);
+int			start_simulation(t_sim *sim);
 
 #endif

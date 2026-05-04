@@ -6,7 +6,7 @@
 /*   By: asmounci <asmounci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 12:48:39 by asmounci          #+#    #+#             */
-/*   Updated: 2026/05/04 12:48:40 by asmounci         ###   ########.fr       */
+/*   Updated: 2026/05/04 13:03:49 by asmounci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,10 +49,4 @@ t_dongle	*init_dongles(int n)
 		i++;
 	}
 	return (dongles);
-}
-
-t_sim    *init_sim(char **av)
-{
-	t_sim = *sim;
-	
 }
