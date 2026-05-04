@@ -6,11 +6,25 @@
 /*   By: asmounci <asmounci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/04 15:05:29 by asmounci          #+#    #+#             */
-/*   Updated: 2026/05/04 18:18:04 by asmounci         ###   ########.fr       */
+/*   Updated: 2026/05/04 21:13:38 by asmounci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
+
+static int	all_coders_done(t_sim *sim)
+{
+	int	i;
+
+	i = 0;
+	while (i < sim->params.nb_coders)
+	{
+		if (sim->coders[i].compile_count < sim->params.nb_compiles_required)
+			return (0);
+		i++;
+	}
+	return (1);
+}
 
 void	*coder_routine(void *arg)
 {
@@ -28,6 +42,8 @@ void	*coder_routine(void *arg)
 		log_state(sim, coder->id, "is refactoring");
 		usleep(sim->params.time_to_refactor * 1000);
 		coder->compile_count++;
+		if (all_coders_done(sim))
+			sim->stop = 1;
 	}
 	return (NULL);
 }
