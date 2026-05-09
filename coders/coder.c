@@ -12,6 +12,11 @@
 
 #include "codexion.h"
 
+static int	is_stopped(t_sim *sim)
+{
+	return (sim->stop);
+}
+
 static int	all_coders_done(t_sim *sim)
 {
 	int	i;
@@ -36,13 +41,21 @@ void	*coder_routine(void *arg)
 	while (!sim->stop)
 	{
 		coder->last_compile_time = get_time_ms();
+		if (is_stopped(sim))
+			return (NULL);
 		log_state(sim, coder->id, "is compiling");
 		usleep(sim->params.time_to_compile * 1000);
+		if (is_stopped(sim))
+			return (NULL);
 		coder->compile_count++;
 		log_state(sim, coder->id, "is debugging");
 		usleep(sim->params.time_to_debug * 1000);
+		if (is_stopped(sim))
+			return (NULL);
 		log_state(sim, coder->id, "is refactoring");
 		usleep(sim->params.time_to_refactor * 1000);
+		if (is_stopped(sim))
+			return (NULL);
 		if (all_coders_done(sim))
 			sim->stop = 1;
 	}
