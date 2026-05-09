@@ -10,7 +10,7 @@ SRC = coders/main.c     \
 	  coders/coder.c    \
 	  coders/monitor.c  \
 	  coders/dongles.c  \
-	  coder/coder_utils.c
+	  coders/coder_utils.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)

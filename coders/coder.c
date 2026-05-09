@@ -12,6 +12,34 @@
 
 #include "codexion.h"
 
+static int	coder_cycle(t_coder *coder, t_sim *sim)
+{
+	take_dongles(coder, sim);
+	if (is_stopped(sim))
+		return (1);
+	coder->last_compile_time = get_time_ms();
+	log_state(sim, coder->id, "is compiling");
+	usleep(sim->params.time_to_compile * 1000);
+	if (is_stopped(sim))
+	{
+		release_dongles(coder, sim);
+		return (1);
+	}
+	release_dongles(coder, sim);
+	coder->compile_count++;
+	log_state(sim, coder->id, "is debugging");
+	usleep(sim->params.time_to_debug * 1000);
+	if (is_stopped(sim))
+		return (1);
+	log_state(sim, coder->id, "is refactoring");
+	usleep(sim->params.time_to_refactor * 1000);
+	if (is_stopped(sim))
+		return (1);
+	if (all_coders_done(sim))
+		sim->stop = 1;
+	return (0);
+}
+
 void	*coder_routine(void *arg)
 {
 	t_coder	*coder;
@@ -21,29 +49,8 @@ void	*coder_routine(void *arg)
 	sim = coder->sim;
 	while (!sim->stop)
 	{
-		take_dongles(coder, sim);
-		if (is_stopped(sim))
+		if (coder_cycle(coder, sim))
 			return (NULL);
-		coder->last_compile_time = get_time_ms();
-		log_state(sim, coder->id, "is compiling");
-		usleep(sim->params.time_to_compile * 1000);
-		if (is_stopped(sim))
-		{
-			release_dongles(coder, sim);
-			return (NULL);
-		}
-		release_dongles(coder, sim);
-		coder->compile_count++;
-		log_state(sim, coder->id, "is debugging");
-		usleep(sim->params.time_to_debug * 1000);
-		if (is_stopped(sim))
-			return (NULL);
-		log_state(sim, coder->id, "is refactoring");
-		usleep(sim->params.time_to_refactor * 1000);
-		if (is_stopped(sim))
-			return (NULL);
-		if (all_coders_done(sim))
-			sim->stop = 1;
 	}
 	return (NULL);
 }
