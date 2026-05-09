@@ -59,6 +59,7 @@ typedef struct s_sim
 	long			start_time;
 	int				stop;
 	pthread_mutex_t	log_mutex;
+	pthread_t		monitor;
 }	t_sim;
 
 int			check_args(int ac, char **av);

@@ -35,13 +35,14 @@ void	*coder_routine(void *arg)
 	sim = coder->sim;
 	while (!sim->stop)
 	{
+		coder->last_compile_time = get_time_ms();
 		log_state(sim, coder->id, "is compiling");
 		usleep(sim->params.time_to_compile * 1000);
+		coder->compile_count++;
 		log_state(sim, coder->id, "is debugging");
 		usleep(sim->params.time_to_debug * 1000);
 		log_state(sim, coder->id, "is refactoring");
 		usleep(sim->params.time_to_refactor * 1000);
-		coder->compile_count++;
 		if (all_coders_done(sim))
 			sim->stop = 1;
 	}
@@ -58,6 +59,7 @@ int	start_simulation(t_sim *sim)
 	while (i < n)
 	{
 		sim->coders[i].sim = sim;
+		sim->coders[i].last_compile_time = sim->start_time;
 		pthread_create(&sim->coders[i].thread, NULL, coder_routine,
 			&sim->coders[i]);
 		i++;
