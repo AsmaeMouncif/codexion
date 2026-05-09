@@ -64,11 +64,13 @@ int	start_simulation(t_sim *sim)
 			&sim->coders[i]);
 		i++;
 	}
+	pthread_create(&sim->monitor, NULL, monitor_routine, sim);
 	i = 0;
 	while (i < n)
 	{
 		pthread_join(sim->coders[i].thread, NULL);
 		i++;
 	}
+	pthread_join(sim->monitor, NULL);
 	return (0);
 }

@@ -73,5 +73,6 @@ long		get_time_ms(void);
 void		log_state(t_sim *sim, int id, char *msg);
 void		*coder_routine(void *arg);
 int			start_simulation(t_sim *sim);
+void		*monitor_routine(void *arg);
 
 #endif
