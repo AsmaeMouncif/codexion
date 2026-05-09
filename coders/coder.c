@@ -31,6 +31,63 @@ static int	all_coders_done(t_sim *sim)
 	return (1);
 }
 
+static void	take_one_dongle(t_coder *coder, t_sim *sim, int idx)
+{
+	t_dongle	*d;
+
+	d = &sim->dongles[idx];
+	while (!is_stopped(sim))
+	{
+		pthread_mutex_lock(&d->mutex);
+		if (d->available
+			&& (get_time_ms() - d->released_at) >= sim->params.dongle_cooldown)
+		{
+			d->available = 0;
+			pthread_mutex_unlock(&d->mutex);
+			log_state(sim, coder->id, "has taken a dongle");
+			return ;
+		}
+		pthread_mutex_unlock(&d->mutex);
+		usleep(500);
+	}
+}
+
+static void	take_dongles(t_coder *coder, t_sim *sim)
+{
+	int	left;
+	int	right;
+
+	left = coder->id - 1;
+	right = coder->id % sim->params.nb_coders;
+	if (coder->id == sim->params.nb_coders)
+	{
+		take_one_dongle(coder, sim, right);
+		take_one_dongle(coder, sim, left);
+	}
+	else
+	{
+		take_one_dongle(coder, sim, left);
+		take_one_dongle(coder, sim, right);
+	}
+}
+
+static void	release_dongles(t_coder *coder, t_sim *sim)
+{
+	int	left;
+	int	right;
+
+	left = coder->id - 1;
+	right = coder->id % sim->params.nb_coders;
+	pthread_mutex_lock(&sim->dongles[left].mutex);
+	sim->dongles[left].available = 1;
+	sim->dongles[left].released_at = get_time_ms();
+	pthread_mutex_unlock(&sim->dongles[left].mutex);
+	pthread_mutex_lock(&sim->dongles[right].mutex);
+	sim->dongles[right].available = 1;
+	sim->dongles[right].released_at = get_time_ms();
+	pthread_mutex_unlock(&sim->dongles[right].mutex);
+}
+
 void	*coder_routine(void *arg)
 {
 	t_coder	*coder;
@@ -41,12 +98,17 @@ void	*coder_routine(void *arg)
 	while (!sim->stop)
 	{
 		coder->last_compile_time = get_time_ms();
+		take_dongles(coder, sim);
 		if (is_stopped(sim))
 			return (NULL);
 		log_state(sim, coder->id, "is compiling");
 		usleep(sim->params.time_to_compile * 1000);
 		if (is_stopped(sim))
+		{
+			release_dongles(coder, sim);
 			return (NULL);
+		}
+		release_dongles(coder, sim);
 		coder->compile_count++;
 		log_state(sim, coder->id, "is debugging");
 		usleep(sim->params.time_to_debug * 1000);
