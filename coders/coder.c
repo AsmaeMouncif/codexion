@@ -27,17 +27,18 @@ static int	coder_cycle(t_coder *coder, t_sim *sim)
 	}
 	release_dongles(coder, sim);
 	coder->compile_count++;
+	if (all_coders_done(sim))
+	{
+		sim->stop = 1;
+		return (1);
+	}
 	log_state(sim, coder->id, "is debugging");
 	usleep(sim->params.time_to_debug * 1000);
 	if (is_stopped(sim))
 		return (1);
 	log_state(sim, coder->id, "is refactoring");
 	usleep(sim->params.time_to_refactor * 1000);
-	if (is_stopped(sim))
-		return (1);
-	if (all_coders_done(sim))
-		sim->stop = 1;
-	return (0);
+	return (is_stopped(sim));
 }
 
 void	*coder_routine(void *arg)
@@ -49,6 +50,11 @@ void	*coder_routine(void *arg)
 	sim = coder->sim;
 	while (!sim->stop)
 	{
+		if (all_coders_done(sim))
+		{
+			sim->stop = 1;
+			return (NULL);
+		}
 		if (coder_cycle(coder, sim))
 			return (NULL);
 	}
