@@ -97,10 +97,10 @@ void	*coder_routine(void *arg)
 	sim = coder->sim;
 	while (!sim->stop)
 	{
-		coder->last_compile_time = get_time_ms();
 		take_dongles(coder, sim);
 		if (is_stopped(sim))
 			return (NULL);
+		coder->last_compile_time = get_time_ms();
 		log_state(sim, coder->id, "is compiling");
 		usleep(sim->params.time_to_compile * 1000);
 		if (is_stopped(sim))
