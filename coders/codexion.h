@@ -19,8 +19,15 @@
 # include <pthread.h>
 # include <stdio.h>
 # include <sys/time.h>
+# include <time.h>
 
 typedef struct s_sim	t_sim;
+
+typedef struct s_waiter
+{
+	int		coder_id;
+	long	key;
+}	t_waiter;
 
 typedef struct s_coder
 {
@@ -37,6 +44,10 @@ typedef struct s_dongle
 	pthread_mutex_t	mutex;
 	int				available;
 	long			released_at;
+	pthread_cond_t	cond;
+	t_waiter		*heap;
+	int				nb_waiters;
+	int				capacity;
 }	t_dongle;
 
 typedef struct s_params
@@ -78,5 +89,8 @@ void		release_dongles(t_coder *coder, t_sim *sim);
 void		*coder_routine(void *arg);
 int			start_simulation(t_sim *sim);
 void		*monitor_routine(void *arg);
-
+void		heap_push(t_dongle *d, t_waiter w);
+void		heap_pop(t_dongle *d);
+int			heap_top_id(t_dongle *d);
+void		heap_remove(t_dongle *d, int coder_id);
 #endif
