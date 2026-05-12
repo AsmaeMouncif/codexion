@@ -12,51 +12,6 @@
 
 #include "codexion.h"
 
-static void	swap_waiters(t_waiter *a, t_waiter *b)
-{
-	t_waiter	tmp;
-
-	tmp = *a;
-	*a = *b;
-	*b = tmp;
-}
-
-static void	sift_up(t_dongle *d, int index)
-{
-	int	parent;
-
-	while (index > 0)
-	{
-		parent = (index - 1) / 2;
-		if (d->heap[index].key >= d->heap[parent].key)
-			break ;
-		swap_waiters(&d->heap[index], &d->heap[parent]);
-		index = parent;
-	}
-}
-
-static void	sift_down(t_dongle *d, int index)
-{
-	int	left;
-	int	right;
-	int	min;
-
-	while (1)
-	{
-		left = 2 * index + 1;
-		right = 2 * index + 2;
-		min = index;
-		if (left < d->nb_waiters && d->heap[left].key < d->heap[min].key)
-			min = left;
-		if (right < d->nb_waiters && d->heap[right].key < d->heap[min].key)
-			min = right;
-		if (min == index)
-			break ;
-		swap_waiters(&d->heap[index], &d->heap[min]);
-		index = min;
-	}
-}
-
 void	heap_push(t_dongle *d, t_waiter w)
 {
 	int	i;
@@ -103,6 +58,8 @@ void	heap_remove(t_dongle *d, int coder_id)
 	d->nb_waiters--;
 	if (i >= d->nb_waiters)
 		return ;
-	sift_up(d, i);
-	sift_down(d, i);
+	if (i > 0 && d->heap[i].key < d->heap[(i - 1) / 2].key)
+		sift_up(d, i);
+	else
+		sift_down(d, i);
 }
