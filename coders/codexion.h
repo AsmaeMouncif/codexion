@@ -93,4 +93,5 @@ void		heap_push(t_dongle *d, t_waiter w);
 void		heap_pop(t_dongle *d);
 int			heap_top_id(t_dongle *d);
 void		heap_remove(t_dongle *d, int coder_id);
+
 #endif
