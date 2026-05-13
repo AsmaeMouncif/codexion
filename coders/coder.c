@@ -12,11 +12,6 @@
 
 #include "codexion.h"
 
-static int	execute_cycle(t_coder *coder, t_sim *sim)
-{
-
-}
-
 static int	coder_cycle(t_coder *coder, t_sim *sim)
 {
 	take_dongles(coder, sim);
