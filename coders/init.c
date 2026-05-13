@@ -46,6 +46,13 @@ t_dongle	*init_dongles(int n)
 		dongles[i].available = 1;
 		pthread_mutex_init(&dongles[i].mutex, NULL);
 		dongles[i].released_at = 0;
+		if (pthread_cond_init(&dongles[i].cond, NULL) != 0)
+			return (NULL);
+		dongles[i].heap = malloc(sizeof(t_waiter) * n);
+		if (dongles[i].heap == NULL)
+			return (NULL);
+		dongles[i].nb_waiters = 0;
+		dongles[i].capacity = n;
 		i++;
 	}
 	return (dongles);
