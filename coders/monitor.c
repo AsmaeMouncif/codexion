@@ -26,6 +26,29 @@ static void	wake_all_dongles(t_sim *sim)
 	}
 }
 
+static int	check_burnout(t_sim *sim, int i, long now)
+{
+	long	last;
+
+	pthread_mutex_lock(&sim->state_mutex);
+	last = sim->coders[i].last_compile_time;
+	pthread_mutex_unlock(&sim->state_mutex);
+	if (now - last > sim->params.time_to_burnout)
+	{
+		log_state(sim, sim->coders[i].id, "burned out");
+		return (1);
+	}
+	return (0);
+}
+
+static void	stop_simulation(t_sim *sim)
+{
+	pthread_mutex_lock(&sim->state_mutex);
+	sim->stop = 1;
+	pthread_mutex_unlock(&sim->state_mutex);
+	wake_all_dongles(sim);
+}
+
 void	*monitor_routine(void *arg)
 {
 	t_sim	*sim;
@@ -39,12 +62,9 @@ void	*monitor_routine(void *arg)
 		now = get_time_ms();
 		while (i < sim->params.nb_coders)
 		{
-			if (now - sim->coders[i].last_compile_time
-				> sim->params.time_to_burnout)
+			if (check_burnout(sim, i, now))
 			{
-				log_state(sim, sim->coders[i].id, "burned out");
-				sim->stop = 1;
-				wake_all_dongles(sim);
+				stop_simulation(sim);
 				return (NULL);
 			}
 			i++;

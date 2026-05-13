@@ -12,12 +12,19 @@
 
 #include "codexion.h"
 
+static int	execute_cycle(t_coder *coder, t_sim *sim)
+{
+
+}
+
 static int	coder_cycle(t_coder *coder, t_sim *sim)
 {
 	take_dongles(coder, sim);
 	if (is_stopped(sim))
 		return (1);
+	pthread_mutex_lock(&sim->state_mutex);
 	coder->last_compile_time = get_time_ms();
+	pthread_mutex_unlock(&sim->state_mutex);
 	log_state(sim, coder->id, "is compiling");
 	usleep(sim->params.time_to_compile * 1000);
 	if (is_stopped(sim))
@@ -26,10 +33,14 @@ static int	coder_cycle(t_coder *coder, t_sim *sim)
 		return (1);
 	}
 	release_dongles(coder, sim);
+	pthread_mutex_lock(&sim->state_mutex);
 	coder->compile_count++;
+	pthread_mutex_unlock(&sim->state_mutex);
 	if (all_coders_done(sim))
 	{
+		pthread_mutex_lock(&sim->state_mutex);
 		sim->stop = 1;
+		pthread_mutex_unlock(&sim->state_mutex);
 		return (1);
 	}
 	log_state(sim, coder->id, "is debugging");

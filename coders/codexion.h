@@ -70,6 +70,7 @@ typedef struct s_sim
 	long			start_time;
 	int				stop;
 	pthread_mutex_t	log_mutex;
+	pthread_mutex_t	state_mutex;
 	pthread_t		monitor;
 }	t_sim;
 

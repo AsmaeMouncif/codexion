@@ -14,7 +14,12 @@
 
 int	is_stopped(t_sim *sim)
 {
-	return (sim->stop);
+	int	val;
+
+	pthread_mutex_lock(&sim->state_mutex);
+	val = sim->stop;
+	pthread_mutex_unlock(&sim->state_mutex);
+	return (val);
 }
 
 int	all_coders_done(t_sim *sim)
@@ -22,11 +27,13 @@ int	all_coders_done(t_sim *sim)
 	int	i;
 
 	i = 0;
+	pthread_mutex_lock(&sim->state_mutex);
 	while (i < sim->params.nb_coders)
 	{
 		if (sim->coders[i].compile_count < sim->params.nb_compiles_required)
 			return (0);
 		i++;
 	}
+	pthread_mutex_unlock(&sim->state_mutex);
 	return (1);
 }
