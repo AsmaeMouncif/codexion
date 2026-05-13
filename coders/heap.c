@@ -12,7 +12,7 @@
 
 #include "codexion.h"
 
-void	swap_waiters(t_waiter *a, t_waiter *b)
+static void	swap_waiters(t_waiter *a, t_waiter *b)
 {
 	t_waiter	tmp;
 
@@ -21,7 +21,7 @@ void	swap_waiters(t_waiter *a, t_waiter *b)
 	*b = tmp;
 }
 
-void	sift_up(t_dongle *d, int index)
+static void	sift_up(t_dongle *d, int index)
 {
 	int	parent;
 
@@ -35,7 +35,7 @@ void	sift_up(t_dongle *d, int index)
 	}
 }
 
-void	sift_down(t_dongle *d, int index)
+static void	sift_down(t_dongle *d, int index)
 {
 	int	left;
 	int	right;

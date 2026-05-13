@@ -11,7 +11,8 @@ SRC = coders/main.c        \
 	  coders/monitor.c     \
 	  coders/dongles.c     \
 	  coders/coder_utils.c \
-	  coders/scheduler.c
+	  coders/scheduler.c   \
+	  coders/heap.c
 OBJ = $(SRC:.c=.o)
 
 all: $(NAME)
