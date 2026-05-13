@@ -20,6 +20,8 @@ void	cleanup(t_coder *coders, t_dongle *dongles, int n)
 	while (i < n)
 	{
 		pthread_mutex_destroy(&dongles[i].mutex);
+		pthread_cond_destroy(&dongles[i].cond);
+		free(dongles[i].heap);
 		i++;
 	}
 	free(dongles);
