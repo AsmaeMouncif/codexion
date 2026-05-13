@@ -32,6 +32,18 @@ t_coder	*init_coders(int n)
 	return (coders);
 }
 
+static void	free_dongles(t_dongle *d, int i)
+{
+	while (i > 0)
+	{
+		i--;
+		free(d[i].heap);
+		pthread_mutex_destroy(&d[i].mutex);
+		pthread_cond_destroy(&d[i].cond);
+	}
+	free(d);
+}
+
 t_dongle	*init_dongles(int n)
 {
 	t_dongle	*dongles;
@@ -44,15 +56,17 @@ t_dongle	*init_dongles(int n)
 	while (i < n)
 	{
 		dongles[i].available = 1;
-		pthread_mutex_init(&dongles[i].mutex, NULL);
 		dongles[i].released_at = 0;
-		if (pthread_cond_init(&dongles[i].cond, NULL) != 0)
-			return (NULL);
-		dongles[i].heap = malloc(sizeof(t_waiter) * n);
-		if (dongles[i].heap == NULL)
-			return (NULL);
 		dongles[i].nb_waiters = 0;
 		dongles[i].capacity = n;
+		dongles[i].heap = malloc(sizeof(t_waiter) * n);
+		if (dongles[i].heap == NULL
+			|| pthread_mutex_init(&dongles[i].mutex, NULL) != 0
+			|| pthread_cond_init(&dongles[i].cond, NULL) != 0)
+		{
+			free_dongles(dongles, i);
+			return (NULL);
+		}
 		i++;
 	}
 	return (dongles);
