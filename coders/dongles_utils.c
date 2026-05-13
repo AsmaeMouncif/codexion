@@ -18,6 +18,17 @@ int	can_take(t_dongle *d, int coder_id, int cooldown)
 	return (1);
 }
 
+static void	wait_for_dongle(t_dongle *d, t_sim *sim)
+{
+	struct timespec	ts;
+	long			wake_at;
+
+	wake_at = d->released_at + sim->params.dongle_cooldown;
+	ts.tv_sec = wake_at / 1000;
+	ts.tv_nsec = (wake_at % 1000) * 1000000L;
+	pthread_cond_timedwait(&d->cond, &d->mutex, &ts);
+}
+
 void	take_one_dongle(t_coder *coder, t_sim *sim, int idx)
 {
 	t_dongle	*d;
@@ -30,7 +41,7 @@ void	take_one_dongle(t_coder *coder, t_sim *sim, int idx)
 	heap_push(d, w);
 	while (!is_stopped(sim)
 		&& !can_take(d, coder->id, sim->params.dongle_cooldown))
-		pthread_cond_wait(&d->cond, &d->mutex);
+		wait_for_dongle(d, sim);
 	if (is_stopped(sim))
 	{
 		heap_remove(d, coder->id);

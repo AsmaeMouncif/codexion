@@ -12,6 +12,20 @@
 
 #include "codexion.h"
 
+static void	wake_all_dongles(t_sim *sim)
+{
+	int	i;
+
+	i = 0;
+	while (i < sim->params.nb_coders)
+	{
+		pthread_mutex_lock(&sim->dongles[i].mutex);
+		pthread_cond_broadcast(&sim->dongles[i].cond);
+		pthread_mutex_unlock(&sim->dongles[i].mutex);
+		i++;
+	}
+}
+
 void	*monitor_routine(void *arg)
 {
 	t_sim	*sim;
@@ -30,6 +44,7 @@ void	*monitor_routine(void *arg)
 			{
 				log_state(sim, sim->coders[i].id, "burned out");
 				sim->stop = 1;
+				wake_all_dongles(sim);
 				return (NULL);
 			}
 			i++;
