@@ -56,7 +56,7 @@ void	*monitor_routine(void *arg)
 	int		i;
 
 	sim = (t_sim *)arg;
-	while (!sim->stop)
+	while (!is_stopped(sim))
 	{
 		i = 0;
 		now = get_time_ms();
