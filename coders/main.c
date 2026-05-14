@@ -12,6 +12,32 @@
 
 #include "codexion.h"
 
+int	start_simulation(t_sim *sim)
+{
+	int	i;
+	int	n;
+
+	n = sim->params.nb_coders;
+	i = 0;
+	while (i < n)
+	{
+		sim->coders[i].sim = sim;
+		sim->coders[i].last_compile_time = sim->start_time;
+		pthread_create(&sim->coders[i].thread, NULL, coder_routine,
+			&sim->coders[i]);
+		i++;
+	}
+	pthread_create(&sim->monitor, NULL, monitor_routine, sim);
+	i = 0;
+	while (i < n)
+	{
+		pthread_join(sim->coders[i].thread, NULL);
+		i++;
+	}
+	pthread_join(sim->monitor, NULL);
+	return (0);
+}
+
 int	main(int ac, char **av)
 {
 	t_sim	sim;

@@ -12,14 +12,19 @@
 
 #include "codexion.h"
 
-static int	coder_cycle(t_coder *coder, t_sim *sim)
+static void	update_compile_time(t_coder *coder, t_sim *sim)
+{
+	pthread_mutex_lock(&sim->state_mutex);
+	coder->last_compile_time = get_time_ms();
+	pthread_mutex_unlock(&sim->state_mutex);
+}
+
+static int	do_compile(t_coder *coder, t_sim *sim)
 {
 	take_dongles(coder, sim);
 	if (is_stopped(sim))
 		return (1);
-	pthread_mutex_lock(&sim->state_mutex);
-	coder->last_compile_time = get_time_ms();
-	pthread_mutex_unlock(&sim->state_mutex);
+	update_compile_time(coder, sim);
 	log_state(sim, coder->id, "is compiling");
 	usleep(sim->params.time_to_compile * 1000);
 	if (is_stopped(sim))
@@ -31,13 +36,11 @@ static int	coder_cycle(t_coder *coder, t_sim *sim)
 	pthread_mutex_lock(&sim->state_mutex);
 	coder->compile_count++;
 	pthread_mutex_unlock(&sim->state_mutex);
-	if (all_coders_done(sim))
-	{
-		pthread_mutex_lock(&sim->state_mutex);
-		sim->stop = 1;
-		pthread_mutex_unlock(&sim->state_mutex);
-		return (1);
-	}
+	return (0);
+}
+
+static int	do_debug_refactor(t_coder *coder, t_sim *sim)
+{
 	log_state(sim, coder->id, "is debugging");
 	usleep(sim->params.time_to_debug * 1000);
 	if (is_stopped(sim))
@@ -47,6 +50,20 @@ static int	coder_cycle(t_coder *coder, t_sim *sim)
 	return (is_stopped(sim));
 }
 
+static int	coder_cycle(t_coder *coder, t_sim *sim)
+{
+	if (do_compile(coder, sim))
+		return (1);
+	if (all_coders_done(sim))
+	{
+		pthread_mutex_lock(&sim->state_mutex);
+		sim->stop = 1;
+		pthread_mutex_unlock(&sim->state_mutex);
+		return (1);
+	}
+	return (do_debug_refactor(coder, sim));
+}
+
 void	*coder_routine(void *arg)
 {
 	t_coder	*coder;
@@ -54,41 +71,17 @@ void	*coder_routine(void *arg)
 
 	coder = (t_coder *)arg;
 	sim = coder->sim;
-	while (!sim->stop)
+	while (!is_stopped(sim))
 	{
 		if (all_coders_done(sim))
 		{
+			pthread_mutex_lock(&sim->state_mutex);
 			sim->stop = 1;
+			pthread_mutex_unlock(&sim->state_mutex);
 			return (NULL);
 		}
 		if (coder_cycle(coder, sim))
 			return (NULL);
 	}
 	return (NULL);
-}
-
-int	start_simulation(t_sim *sim)
-{
-	int	i;
-	int	n;
-
-	n = sim->params.nb_coders;
-	i = 0;
-	while (i < n)
-	{
-		sim->coders[i].sim = sim;
-		sim->coders[i].last_compile_time = sim->start_time;
-		pthread_create(&sim->coders[i].thread, NULL, coder_routine,
-			&sim->coders[i]);
-		i++;
-	}
-	pthread_create(&sim->monitor, NULL, monitor_routine, sim);
-	i = 0;
-	while (i < n)
-	{
-		pthread_join(sim->coders[i].thread, NULL);
-		i++;
-	}
-	pthread_join(sim->monitor, NULL);
-	return (0);
 }
