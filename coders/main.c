@@ -55,8 +55,15 @@ int	main(int ac, char **av)
 	sim.dongles = init_dongles(n);
 	if (sim.dongles == NULL)
 		return (free(sim.coders), write(2, "Error: malloc failed\n", 21), 1);
-	pthread_mutex_init(&sim.log_mutex, NULL);
-	pthread_mutex_init(&sim.state_mutex, NULL);
+	if (pthread_mutex_init(&sim.log_mutex, NULL) != 0)
+		return (cleanup(sim.coders, sim.dongles, n),
+			write(2, "Error: mutex init failed\n", 25), 1);
+	if (pthread_mutex_init(&sim.state_mutex, NULL) != 0)
+	{
+		pthread_mutex_destroy(&sim.log_mutex);
+		return (cleanup(sim.coders, sim.dongles, n),
+			write(2, "Error: mutex init failed\n", 25), 1);
+	}
 	start_simulation(&sim);
 	pthread_mutex_destroy(&sim.log_mutex);
 	pthread_mutex_destroy(&sim.state_mutex);

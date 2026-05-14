@@ -23,7 +23,10 @@ static int	do_compile(t_coder *coder, t_sim *sim)
 {
 	take_dongles(coder, sim);
 	if (is_stopped(sim))
+	{
+		release_dongles(coder, sim);
 		return (1);
+	}
 	update_compile_time(coder, sim);
 	log_state(sim, coder->id, "is compiling");
 	usleep(sim->params.time_to_compile * 1000);
