@@ -43,7 +43,7 @@ int	main(int ac, char **av)
 	t_sim	sim;
 	int		n;
 
-	if (check_args(ac, av))
+	if (check_args(ac, av) != 0)
 		return (1);
 	sim.params = parse_args(av);
 	n = sim.params.nb_coders;
