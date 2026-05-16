@@ -78,7 +78,7 @@ t_dongle	*init_dongles(int n)
 	i = 0;
 	while (i < n)
 	{
-		if (!init_one_dongle(&dongles[i], n, dongles, i))
+		if (init_one_dongle(&dongles[i], n, dongles, i) == 0)
 			return (NULL);
 		i++;
 	}
