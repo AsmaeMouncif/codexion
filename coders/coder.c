@@ -74,9 +74,9 @@ void	*coder_routine(void *arg)
 
 	coder = (t_coder *)arg;
 	sim = coder->sim;
-	while (!is_stopped(sim))
+	while (is_stopped(sim) == 0)
 	{
-		if (all_coders_done(sim))
+		if (all_coders_done(sim) == 1)
 		{
 			pthread_mutex_lock(&sim->state_mutex);
 			sim->stop = 1;
