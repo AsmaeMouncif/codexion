@@ -5,63 +5,61 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: asmounci <asmounci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/05/20 12:58:48 by asmounci          #+#    #+#             */
-/*   Updated: 2026/05/20 12:58:50 by asmounci         ###   ########.fr       */
+/*   Created: 2026/05/20 13:08:31 by asmounci          #+#    #+#             */
+/*   Updated: 2026/05/20 13:08:33 by asmounci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "codexion.h"
 
-void	swap_waiters(t_waiter *a, t_waiter *b)
+void	heap_push(t_dongle *d, t_waiter w)
 {
-	t_waiter	tmp;
+	int	i;
 
-	tmp = *a;
-	*a = *b;
-	*b = tmp;
+	if (d->nb_waiters >= d->capacity)
+		return ;
+	i = d->nb_waiters;
+	d->heap[i] = w;
+	d->nb_waiters++;
+	sift_up(d, i);
 }
 
-void	sift_up(t_dongle *d, int index)
+void	heap_pop(t_dongle *d)
 {
-	int	parent;
-
-	while (index > 0)
-	{
-		parent = (index - 1) / 2;
-		if (d->heap[index].key > d->heap[parent].key)
-			break ;
-		if (d->heap[index].key == d->heap[parent].key
-			&& d->heap[index].coder_id >= d->heap[parent].coder_id)
-			break ;
-		swap_waiters(&d->heap[index], &d->heap[parent]);
-		index = parent;
-	}
+	if (d->nb_waiters <= 0)
+		return ;
+	d->heap[0] = d->heap[d->nb_waiters - 1];
+	d->nb_waiters--;
+	if (d->nb_waiters > 0)
+		sift_down(d, 0);
 }
 
-void	sift_down(t_dongle *d, int index)
+int	heap_top_id(t_dongle *d)
 {
-	int	left;
-	int	right;
-	int	min;
+	if (d->nb_waiters <= 0)
+		return (-1);
+	return (d->heap[0].coder_id);
+}
 
-	while (1)
+void	heap_remove(t_dongle *d, int coder_id)
+{
+	int	i;
+
+	i = 0;
+	while (i < d->nb_waiters)
 	{
-		left = 2 * index + 1;
-		right = 2 * index + 2;
-		min = index;
-		if (left < d->nb_waiters
-			&& (d->heap[left].key < d->heap[min].key
-				|| (d->heap[left].key == d->heap[min].key
-					&& d->heap[left].coder_id < d->heap[min].coder_id)))
-			min = left;
-		if (right < d->nb_waiters
-			&& (d->heap[right].key < d->heap[min].key
-				|| (d->heap[right].key == d->heap[min].key
-					&& d->heap[right].coder_id < d->heap[min].coder_id)))
-			min = right;
-		if (min == index)
+		if (d->heap[i].coder_id == coder_id)
 			break ;
-		swap_waiters(&d->heap[index], &d->heap[min]);
-		index = min;
+		i++;
 	}
+	if (i == d->nb_waiters)
+		return ;
+	d->heap[i] = d->heap[d->nb_waiters - 1];
+	d->nb_waiters--;
+	if (i >= d->nb_waiters)
+		return ;
+	if (i > 0 && d->heap[i].key < d->heap[(i - 1) / 2].key)
+		sift_up(d, i);
+	else
+		sift_down(d, i);
 }
