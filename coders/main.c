@@ -47,7 +47,6 @@ int	main(int ac, char **av)
 		return (1);
 	sim.params = parse_args(av);
 	n = sim.params.nb_coders;
-	sim.start_time = get_time_ms();
 	sim.stop = 0;
 	sim.coders = init_coders(n);
 	if (sim.coders == NULL)
@@ -64,6 +63,7 @@ int	main(int ac, char **av)
 		return (cleanup(sim.coders, sim.dongles, n),
 			write(2, "Error: mutex init failed\n", 25), 1);
 	}
+	sim.start_time = get_time_ms();
 	start_simulation(&sim);
 	pthread_mutex_destroy(&sim.log_mutex);
 	pthread_mutex_destroy(&sim.state_mutex);

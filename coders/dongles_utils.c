@@ -12,14 +12,14 @@
 
 #include "codexion.h"
 
-long	get_key(t_coder *coder, t_sim *sim)
+static long	get_key(t_coder *coder, t_sim *sim)
 {
 	if (sim->params.scheduler == 0)
 		return (get_time_ms());
 	return (coder->last_compile_time + sim->params.time_to_burnout);
 }
 
-int	can_take(t_dongle *d, int coder_id, int cooldown)
+static int	can_take(t_dongle *d, int coder_id, int cooldown)
 {
 	if (!d->available)
 		return (0);
