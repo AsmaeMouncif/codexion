@@ -33,18 +33,11 @@ static int	can_take(t_dongle *d, int coder_id, int cooldown)
 static void	wait_for_dongle(t_dongle *d, t_sim *sim)
 {
 	struct timespec	ts;
-	struct timeval	tv;
-	long			wake_at_ms;
+	long			wake_at;
 
-	gettimeofday(&tv, NULL);
-	wake_at_ms = d->released_at + sim->params.dongle_cooldown;
-	ts.tv_sec = tv.tv_sec + (wake_at_ms / 1000);
-	ts.tv_nsec = tv.tv_usec * 1000 + ((wake_at_ms % 1000) * 1000000L);
-	if (ts.tv_nsec >= 1000000000L)
-	{
-		ts.tv_sec += ts.tv_nsec / 1000000000L;
-		ts.tv_nsec %= 1000000000L;
-	}
+	wake_at = d->released_at + sim->params.dongle_cooldown;
+	ts.tv_sec = wake_at / 1000;
+	ts.tv_nsec = (wake_at % 1000) * 1000000L;
 	pthread_cond_timedwait(&d->cond, &d->mutex, &ts);
 }
 
