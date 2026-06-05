@@ -74,6 +74,8 @@ void	*coder_routine(void *arg)
 
 	coder = (t_coder *)arg;
 	sim = coder->sim;
+	if (coder->id % 2 == 0)
+		usleep(1000);
 	while (is_stopped(sim) == 0)
 	{
 		if (all_coders_done(sim) == 1)

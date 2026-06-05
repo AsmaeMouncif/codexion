@@ -1,4 +1,4 @@
-*This project has been created as part of the 42 curriculum by \<asmounci>.*
+*This project has been created as part of the 42 curriculum by asmounci.*
 
 # Codexion 🧵
 
@@ -116,3 +116,8 @@ The mutex ensures the monitor always reads a consistent value.
 - Helgrind thread error detector: https://valgrind.org/docs/manual/hg-manual.html
 
 **AI usage:**
+- Conceptual clarifications: Used to understand EDF scheduling algorithm and Coffman's conditions for deadlock
+- Code review & debugging: Helped identify mutex lock placement and condition variable timing issues
+- Test scenario generation: Generated various parameter combinations to stress-test the scheduler
+- Documentation: Assisted in explaining technical concepts in comments and README sections
+- NOT used for: Core algorithm implementation, main synchronization logic, or critical sections
