@@ -17,6 +17,12 @@ void	take_dongles(t_coder *coder, t_sim *sim)
 	int	left;
 	int	right;
 
+	if (sim->params.nb_coders == 1)
+	{
+		while (!is_stopped(sim))
+			usleep(1000);
+		return ;
+	}
 	left = coder->id - 1;
 	right = coder->id % sim->params.nb_coders;
 	if (coder->id == sim->params.nb_coders)
