@@ -12,6 +12,19 @@
 
 #include "codexion.h"
 
+static void	join_threads(t_sim *sim)
+{
+	int	i;
+
+	i = 0;
+	while (i < sim->params.nb_coders)
+	{
+		pthread_join(sim->coders[i].thread, NULL);
+		i++;
+	}
+	pthread_join(sim->monitor, NULL);
+}
+
 int	start_simulation(t_sim *sim)
 {
 	int	i;
@@ -28,14 +41,37 @@ int	start_simulation(t_sim *sim)
 		i++;
 	}
 	pthread_create(&sim->monitor, NULL, monitor_routine, sim);
-	i = 0;
-	while (i < n)
-	{
-		pthread_join(sim->coders[i].thread, NULL);
-		i++;
-	}
-	pthread_join(sim->monitor, NULL);
+	join_threads(sim);
 	return (0);
+}
+
+static int	init_mutexes(t_sim *sim, int n)
+{
+	if (pthread_mutex_init(&sim->log_mutex, NULL) != 0)
+		return (cleanup(sim->coders, sim->dongles, n),
+			write(2, "Error: mutex init failed\n", 25), 1);
+	if (pthread_mutex_init(&sim->state_mutex, NULL) != 0)
+	{
+		pthread_mutex_destroy(&sim->log_mutex);
+		return (cleanup(sim->coders, sim->dongles, n),
+			write(2, "Error: mutex init failed\n", 25), 1);
+	}
+	return (0);
+}
+
+static int	init_sim(t_sim *sim)
+{
+	int	n;
+
+	n = sim->params.nb_coders;
+	sim->stop = 0;
+	sim->coders = init_coders(n);
+	if (sim->coders == NULL)
+		return (write(2, "Error: malloc failed\n", 21), 1);
+	sim->dongles = init_dongles(n);
+	if (sim->dongles == NULL)
+		return (free(sim->coders), write(2, "Error: malloc failed\n", 21), 1);
+	return (init_mutexes(sim, n));
 }
 
 int	main(int ac, char **av)
@@ -47,22 +83,8 @@ int	main(int ac, char **av)
 		return (1);
 	sim.params = parse_args(av);
 	n = sim.params.nb_coders;
-	sim.stop = 0;
-	sim.coders = init_coders(n);
-	if (sim.coders == NULL)
-		return (write(2, "Error: malloc failed\n", 21), 1);
-	sim.dongles = init_dongles(n);
-	if (sim.dongles == NULL)
-		return (free(sim.coders), write(2, "Error: malloc failed\n", 21), 1);
-	if (pthread_mutex_init(&sim.log_mutex, NULL) != 0)
-		return (cleanup(sim.coders, sim.dongles, n),
-			write(2, "Error: mutex init failed\n", 25), 1);
-	if (pthread_mutex_init(&sim.state_mutex, NULL) != 0)
-	{
-		pthread_mutex_destroy(&sim.log_mutex);
-		return (cleanup(sim.coders, sim.dongles, n),
-			write(2, "Error: mutex init failed\n", 25), 1);
-	}
+	if (init_sim(&sim) != 0)
+		return (1);
 	sim.start_time = get_time_ms();
 	start_simulation(&sim);
 	pthread_mutex_destroy(&sim.log_mutex);
