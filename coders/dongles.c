@@ -6,7 +6,7 @@
 /*   By: asmounci <asmounci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 10:39:34 by asmounci          #+#    #+#             */
-/*   Updated: 2026/05/19 10:39:36 by asmounci         ###   ########.fr       */
+/*   Updated: 2026/06/09 17:57:01 by asmounci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	take_dongles(t_coder *coder, t_sim *sim)
 
 	if (sim->params.nb_coders == 1)
 	{
-		while (!is_stopped(sim))
+		while (is_stopped(sim) == 0)
 			usleep(1000);
 		return ;
 	}
