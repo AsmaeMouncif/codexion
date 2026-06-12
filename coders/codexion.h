@@ -89,7 +89,7 @@ void		release_one(t_sim *sim, int idx);
 void		take_dongles(t_coder *coder, t_sim *sim);
 void		release_dongles(t_coder *coder, t_sim *sim);
 void		*coder_routine(void *arg);
-int			start_simulation(t_sim *sim);
+int			start_simulation(t_sim *sim, int n);
 void		*monitor_routine(void *arg);
 void		swap_waiters(t_waiter *a, t_waiter *b);
 void		sift_up(t_dongle *d, int index);

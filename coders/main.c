@@ -25,12 +25,10 @@ static void	join_threads(t_sim *sim)
 	pthread_join(sim->monitor, NULL);
 }
 
-int	start_simulation(t_sim *sim)
+int	start_simulation(t_sim *sim, int n)
 {
 	int	i;
-	int	n;
 
-	n = sim->params.nb_coders;
 	i = 0;
 	while (i < n)
 	{
@@ -83,7 +81,7 @@ int	main(int ac, char **av)
 	if (init_sim(&sim, n) != 0)
 		return (1);
 	sim.start_time = get_time_ms();
-	start_simulation(&sim);
+	start_simulation(&sim, n);
 	pthread_mutex_destroy(&sim.log_mutex);
 	pthread_mutex_destroy(&sim.state_mutex);
 	cleanup(sim.coders, sim.dongles, n);
