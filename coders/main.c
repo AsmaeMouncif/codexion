@@ -59,11 +59,8 @@ static int	init_mutexes(t_sim *sim, int n)
 	return (0);
 }
 
-static int	init_sim(t_sim *sim)
+static int	init_sim(t_sim *sim, int n)
 {
-	int	n;
-
-	n = sim->params.nb_coders;
 	sim->stop = 0;
 	sim->coders = init_coders(n);
 	if (sim->coders == NULL)
@@ -83,7 +80,7 @@ int	main(int ac, char **av)
 		return (1);
 	sim.params = parse_args(av);
 	n = sim.params.nb_coders;
-	if (init_sim(&sim) != 0)
+	if (init_sim(&sim, n) != 0)
 		return (1);
 	sim.start_time = get_time_ms();
 	start_simulation(&sim);
