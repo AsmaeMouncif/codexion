@@ -56,13 +56,13 @@ void	*monitor_routine(void *arg)
 	int		i;
 
 	sim = (t_sim *)arg;
-	while (!is_stopped(sim))
+	while (is_stopped(sim) == 0)
 	{
 		i = 0;
 		now = get_time_ms();
 		while (i < sim->params.nb_coders)
 		{
-			if (check_burnout(sim, i, now))
+			if (check_burnout(sim, i, now) != 0)
 			{
 				stop_simulation(sim);
 				return (NULL);
