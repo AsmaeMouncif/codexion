@@ -21,7 +21,7 @@ static long	get_key(t_coder *coder, t_sim *sim)
 
 static int	can_take(t_dongle *d, int coder_id, int cooldown)
 {
-	if (!d->available)
+	if (d->available == 0)
 		return (0);
 	if ((get_time_ms() - d->released_at) < cooldown)
 		return (0);
@@ -51,10 +51,10 @@ void	take_one_dongle(t_coder *coder, t_sim *sim, int idx)
 	w.key = get_key(coder, sim);
 	pthread_mutex_lock(&d->mutex);
 	heap_push(d, w);
-	while (!is_stopped(sim)
-		&& !can_take(d, coder->id, sim->params.dongle_cooldown))
+	while (is_stopped(sim) == 0
+		&& can_take(d, coder->id, sim->params.dongle_cooldown) == 0)
 		wait_for_dongle(d, sim);
-	if (is_stopped(sim))
+	if (is_stopped(sim) != 0)
 	{
 		heap_remove(d, coder->id);
 		pthread_mutex_unlock(&d->mutex);
