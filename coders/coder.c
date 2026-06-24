@@ -22,7 +22,7 @@ static void	update_compile_time(t_coder *coder, t_sim *sim)
 static int	do_compile(t_coder *coder, t_sim *sim)
 {
 	take_dongles(coder, sim);
-	if (is_stopped(sim))
+	if (is_stopped(sim) != 0)
 	{
 		release_dongles(coder, sim);
 		return (1);
@@ -30,7 +30,7 @@ static int	do_compile(t_coder *coder, t_sim *sim)
 	update_compile_time(coder, sim);
 	log_state(sim, coder->id, "is compiling");
 	usleep(sim->params.time_to_compile * 1000);
-	if (is_stopped(sim))
+	if (is_stopped(sim) != 0)
 	{
 		release_dongles(coder, sim);
 		return (1);
@@ -46,7 +46,7 @@ static int	do_debug_refactor(t_coder *coder, t_sim *sim)
 {
 	log_state(sim, coder->id, "is debugging");
 	usleep(sim->params.time_to_debug * 1000);
-	if (is_stopped(sim))
+	if (is_stopped(sim) != 0)
 		return (1);
 	log_state(sim, coder->id, "is refactoring");
 	usleep(sim->params.time_to_refactor * 1000);
@@ -55,9 +55,9 @@ static int	do_debug_refactor(t_coder *coder, t_sim *sim)
 
 static int	coder_cycle(t_coder *coder, t_sim *sim)
 {
-	if (do_compile(coder, sim))
+	if (do_compile(coder, sim) != 0)
 		return (1);
-	if (all_coders_done(sim))
+	if (all_coders_done(sim) != 0)
 	{
 		pthread_mutex_lock(&sim->state_mutex);
 		sim->stop = 1;
@@ -78,14 +78,14 @@ void	*coder_routine(void *arg)
 		usleep(1000);
 	while (is_stopped(sim) == 0)
 	{
-		if (all_coders_done(sim) == 1)
+		if (all_coders_done(sim) != 0)
 		{
 			pthread_mutex_lock(&sim->state_mutex);
 			sim->stop = 1;
 			pthread_mutex_unlock(&sim->state_mutex);
 			return (NULL);
 		}
-		if (coder_cycle(coder, sim))
+		if (coder_cycle(coder, sim) != 0)
 			return (NULL);
 	}
 	return (NULL);

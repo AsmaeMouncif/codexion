@@ -85,6 +85,7 @@ long		get_time_ms(void);
 void		log_state(t_sim *sim, int id, char *msg);
 int			is_stopped(t_sim *sim);
 int			all_coders_done(t_sim *sim);
+void		take_one_dongle(t_coder *coder, t_sim *sim, int idx);
 void		release_one(t_sim *sim, int idx);
 void		take_dongles(t_coder *coder, t_sim *sim);
 void		release_dongles(t_coder *coder, t_sim *sim);
