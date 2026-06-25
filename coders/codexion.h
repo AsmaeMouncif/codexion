@@ -19,7 +19,7 @@
 # include <pthread.h>
 # include <stdio.h>
 # include <sys/time.h>
-// # include <time.h>
+# include <time.h>
 
 typedef struct s_sim	t_sim;
 
