@@ -45,8 +45,24 @@ make
 
 **Example:**
 ```bash
-./codexion 5 4000 200 200 200 3 100 fifo
-./codexion 3 2500 200 200 200 5 50 edf
+./codexion 3 300 100 100 100 1 0 fifo 
+./codexion 3 300 100 100 100 1 0 edf
+```
+
+**Example Execution:**
+```bash
+0 1 has taken a dongle
+0 1 has taken a dongle
+0 1 is compiling
+100 1 is debugging
+100 3 has taken a dongle
+100 3 has taken a dongle
+100 3 is compiling
+100 2 has taken a dongle
+200 2 has taken a dongle
+200 2 is compiling
+200 1 is refactoring
+200 3 is debugging
 ```
 
 **Cleanup:**
