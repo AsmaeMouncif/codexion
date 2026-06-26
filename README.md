@@ -27,14 +27,23 @@ make
 ```
 
 **Arguments:**
-- `number_of_coders` — number of coders sitting in the circular hub (also equals the number of dongles on the table)
-- `time_to_burnout` — max time (ms) a coder can go without starting a compile before burning out
-- `time_to_compile` — time (ms) spent compiling; coder must hold 2 dongles during this phase
-- `time_to_debug` — time (ms) spent debugging after each compile
-- `time_to_refactor` — time (ms) spent refactoring; coder immediately attempts to compile again after this phase
-- `number_of_compiles_required` — simulation stops when every coder has compiled at least this many times
-- `dongle_cooldown` — time (ms) a dongle remains unavailable after being released
-- `scheduler` — arbitration policy for dongle access: `fifo` (first come first served) or `edf` (earliest deadline first)
+- `number_of_coders` — The number of coders in the simulation. This also equals the number of dongles available on the table.
+
+- `time_to_burnout` — The maximum time (in milliseconds) a coder can go without starting a compile before burning out. The timer starts from the beginning of their last compile, or from the start of the simulation if they have never compiled.
+
+- `time_to_compile` — The time (in milliseconds) a coder spends compiling. During this phase, the coder must hold two dongles simultaneously.
+
+- `time_to_debug` — The time (in milliseconds) a coder spends debugging after each compile session.
+
+- `time_to_refactor` — The time (in milliseconds) a coder spends refactoring after debugging. Once this phase completes, the coder immediately attempts to acquire dongles and compile again.
+
+- `number_of_compiles_required` — The simulation stops when every coder has compiled at least this many times. If a coder burns out before reaching this threshold, the simulation stops immediately.
+
+- `dongle_cooldown` — The time (in milliseconds) a dongle remains unavailable after being released by a coder. During cooldown, no other coder can acquire the dongle.
+
+- `scheduler` — The arbitration policy used to determine which coder gets access to a dongle when multiple coders are waiting.
+  - `fifo` (First In, First Out): Dongles are granted in the order requests were received.
+  - `edf` (Earliest Deadline First): Dongles are granted to the coder with the earliest deadline, where `deadline = last_compile_start + time_to_burnout`.
 
 **Example:**
 ```bash
