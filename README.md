@@ -109,15 +109,6 @@ The mutex ensures the monitor always reads a consistent value.
 
 - **Starting point** — Dining Philosophers visual explanation (YouTube): https://youtu.be/R7tPuETDC5c?si=xgk0kWUL3g5X0sAf
   *(used at the beginning to understand the core problem before coding)*
-- POSIX Threads documentation: https://man7.org/linux/man-pages/man7/pthreads.7.html
-- The Dining Philosophers problem: Dijkstra, E.W. (1971)
-- `pthread_cond_timedwait` man page: https://man7.org/linux/man-pages/man3/pthread_cond_timedwait.3p.html
-- Earliest Deadline First scheduling: Liu & Layland (1973), "Scheduling Algorithms for Multiprogramming in a Hard-Real-Time Environment"
-- Helgrind thread error detector: https://valgrind.org/docs/manual/hg-manual.html
 
 **AI usage:**
-- Conceptual clarifications: Used to understand EDF scheduling algorithm and Coffman's conditions for deadlock
-- Code review & debugging: Helped identify mutex lock placement and condition variable timing issues
-- Test scenario generation: Generated various parameter combinations to stress-test the scheduler
-- Documentation: Assisted in explaining technical concepts in comments and README sections
 - NOT used for: Core algorithm implementation, main synchronization logic, or critical sections
