@@ -117,5 +117,8 @@ The mutex ensures the monitor always reads a consistent value.
 - **Starting point** — Dining Philosophers visual explanation (YouTube): https://youtu.be/R7tPuETDC5c?si=xgk0kWUL3g5X0sAf
   *(used at the beginning to understand the core problem before coding)*
 
+- **Multithreading in C** — GeeksforGeeks: https://www.geeksforgeeks.org/c/multithreading-in-c/
+  *(reference for pthreads, mutexes, and condition variables)*
+
 **AI usage:**
 - NOT used for: Core algorithm implementation, main synchronization logic, or critical sections
