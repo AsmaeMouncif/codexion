@@ -114,6 +114,9 @@ The mutex ensures the monitor always reads a consistent value.
 
 ## Resources
 
+- **Codexion Visualizer** — Real-time simulation replayer: https://codexionvisualizer.dev/
+  *(Interactive tool to visualize and replay simulation scenarios)*
+
 - **Dining Philosophers** — Visual explanation of the problem (YouTube): https://youtu.be/R7tPuETDC5c?si=xgk0kWUL3g5X0sAf
   *(Used to understand the core problem before coding)*
 
