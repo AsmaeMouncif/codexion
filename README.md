@@ -55,7 +55,7 @@ Each line in the output follows this format:
 ```bash
 timestamp_in_ms X state_message
 ```
-Where timestamp_in_ms is the time since the simulation started (in milliseconds) and X is the coder's number.
+Where timestamp_in_ms is the time since the simulation started (in milliseconds), and X is the coder's number.
 
 Possible state messages:
 ```bash
