@@ -123,5 +123,8 @@ The mutex ensures the monitor always reads a consistent value.
 - **Multithreading in C** — GeeksforGeeks tutorial: https://www.geeksforgeeks.org/c/multithreading-in-c/
   *(Covers pthread creation, joining, mutexes, condition variables, and common concurrency issues)*
 
+- **Min-Heap Data Structure** — GeeksforGeeks: https://www.geeksforgeeks.org/dsa/introduction-to-min-heap-data-structure/
+  *(Implementation reference for priority queue used in fifo and edf schedulers)*
+
 **AI usage:**
 - NOT used for: Core algorithm implementation, main synchronization logic, or critical sections
