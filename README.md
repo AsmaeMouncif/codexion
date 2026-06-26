@@ -50,6 +50,7 @@ make
 ```
 
 **Output format:**
+
 Each line in the output follows this format:
 ```bash
 timestamp_in_ms  X  state_message
