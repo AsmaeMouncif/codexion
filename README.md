@@ -49,7 +49,23 @@ make
 ./codexion 3 300 100 100 100 1 0 edf
 ```
 
-**Example Execution:**
+**Output format:**
+Each line in the output follows this format:
+```bash
+timestamp_in_ms  X  state_message
+```
+Where timestamp_in_ms is the time since the simulation started (in milliseconds) and X is the coder's number.
+
+Possible state messages:
+```bash
+timestamp_in_ms X has taken a dongle
+timestamp_in_ms X is compiling
+timestamp_in_ms X is debugging
+timestamp_in_ms X is refactoring
+timestamp_in_ms X burned out
+```
+
+**Example output:**
 ```bash
 0 1 has taken a dongle
 0 1 has taken a dongle
