@@ -90,58 +90,57 @@ make re      # full rebuild
 ```
 
 ## Blocking Cases Handled
-
+ 
 **Deadlock prevention:**
 Coders always acquire their left dongle before their right dongle. The last coder
 (number N) acquires in reverse order (right before left), breaking the circular
 wait — one of Coffman's four necessary conditions for deadlock. This ensures the
 cycle is never closed.
-
+ 
+Even-numbered coders also sleep 1 ms at startup (`usleep(1000)`), staggering
+dongle requests so all coders never compete for the same dongle at the exact same
+moment.
+ 
 **Starvation prevention:**
 The scheduler enforces fair access to each dongle via a priority queue (min-heap).
 - `fifo`: requests are served in arrival order — no coder waits indefinitely.
 - `edf`: requests are served by earliest burnout deadline, prioritizing the coder
   most at risk — prevents starvation under time pressure.
-
 **Cooldown handling:**
 After a dongle is released, it is unavailable for `dongle_cooldown` milliseconds.
 The condition uses `pthread_cond_timedwait` so threads wake automatically when the
 cooldown expires, even if no broadcast occurs.
-
+ 
 **Precise burnout detection:**
-A dedicated monitor thread polls every 1 ms. It compares the current time against
+A dedicated monitor thread polls every 0.5 ms. It compares the current time against
 each coder's `last_compile_time + time_to_burnout`. When burnout is detected, the
 log is printed and the simulation stops within 10 ms as required.
-
+ 
 **Log serialization:**
 All output goes through `log_state`, which holds `log_mutex` for the entire
 duration of the print. This guarantees no two messages interleave on stdout.
-
+ 
 ## Thread Synchronization Mechanisms
-
+ 
 **`pthread_mutex_t dongle.mutex`**
-Protects all fields of a dongle (in_use, heap, last_release_time). Any read or
+Protects all fields of a dongle (available, heap, released_at). Any read or
 write on these fields is done under this lock.
-
+ 
 **`pthread_cond_t dongle.cond`**
 Used with `pthread_cond_timedwait` to make coders wait when a dongle is busy,
 in cooldown, or not their turn in the priority queue. `pthread_cond_broadcast`
 is called on release so all waiting coders re-evaluate the condition.
-
-**`pthread_mutex_t coder.mutex`**
-Protects `nb_compiles` and `last_compile_time` on each coder, which are written
-by the coder thread and read by the monitor thread.
-
+ 
+**`pthread_mutex_t sim.state_mutex`**
+Protects `compile_count`, `last_compile_time` and `sim.stop` on shared state,
+which are written by coder threads and read by the monitor thread.
+ 
 **`pthread_mutex_t sim.log_mutex`**
-Serializes all output. Also used to protect `sim.stop` reads and writes to prevent
-race conditions between the monitor setting stop and coders reading it.
-
-**`pthread_mutex_t sim.stop_mutex`**
-Dedicated lock for `sim.stop`, preventing data races between the monitor writing
-stop=1 and coder threads reading stop in their main loop and inside dongle_acquire.
-
+Serializes all output. Prevents race conditions where two threads print
+simultaneously and their output interleaves on the same line.
+ 
 **Race condition prevention example:**
-Without `coder.mutex`, the monitor could read `last_compile_time` mid-write by
+Without `state_mutex`, the monitor could read `last_compile_time` mid-write by
 the coder thread, producing a corrupt timestamp and a false burnout detection.
 The mutex ensures the monitor always reads a consistent value.
 
