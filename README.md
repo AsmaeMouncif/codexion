@@ -106,6 +106,7 @@ The scheduler enforces fair access to each dongle via a priority queue (min-heap
 - `fifo`: requests are served in arrival order — no coder waits indefinitely.
 - `edf`: requests are served by earliest burnout deadline, prioritizing the coder
   most at risk — prevents starvation under time pressure.
+
 **Cooldown handling:**
 After a dongle is released, it is unavailable for `dongle_cooldown` milliseconds.
 The condition uses `pthread_cond_timedwait` so threads wake automatically when the
