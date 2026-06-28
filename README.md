@@ -161,4 +161,6 @@ The mutex ensures the monitor always reads a consistent value.
 
 **AI usage:**
 
-During this project, I used AI as a learning and support tool to ask general questions when I get stuck not to generate code. I always read and understood the answers before applying anything myself.
+AI Usage:
+
+During this project, I used AI as a learning and support tool to ask general questions when I got stuck, not to generate code. I always read and understood the answers before applying anything myself.
