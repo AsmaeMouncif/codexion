@@ -6,7 +6,7 @@
 /*   By: asmounci <asmounci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 10:39:45 by asmounci          #+#    #+#             */
-/*   Updated: 2026/06/09 19:04:29 by asmounci         ###   ########.fr       */
+/*   Updated: 2026/06/28 22:07:30 by asmounci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ void	log_state(t_sim *sim, int id, char *msg)
 
 	pthread_mutex_lock(&sim->log_mutex);
 	timestamp = get_time_ms() - sim->start_time;
-	printf("%ld %d %s\n", timestamp, id, msg);
+	if (is_stopped(sim) == 0)
+		printf("%ld %d %s\n", timestamp, id, msg);
 	pthread_mutex_unlock(&sim->log_mutex);
 }

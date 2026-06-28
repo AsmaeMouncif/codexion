@@ -6,7 +6,7 @@
 /*   By: asmounci <asmounci@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/05/19 10:39:54 by asmounci          #+#    #+#             */
-/*   Updated: 2026/06/09 19:05:27 by asmounci         ###   ########.fr       */
+/*   Updated: 2026/06/28 22:20:07 by asmounci         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,27 +26,31 @@ static void	wake_all_dongles(t_sim *sim)
 	}
 }
 
-static int	check_burnout(t_sim *sim, int i, long now)
-{
-	long	last;
-
-	pthread_mutex_lock(&sim->state_mutex);
-	last = sim->coders[i].last_compile_time;
-	pthread_mutex_unlock(&sim->state_mutex);
-	if (now - last > sim->params.time_to_burnout)
-	{
-		log_state(sim, sim->coders[i].id, "burned out");
-		return (1);
-	}
-	return (0);
-}
-
 static void	stop_simulation(t_sim *sim)
 {
 	pthread_mutex_lock(&sim->state_mutex);
 	sim->stop = 1;
 	pthread_mutex_unlock(&sim->state_mutex);
 	wake_all_dongles(sim);
+}
+
+static int	check_burnout(t_sim *sim, int i, long now)
+{
+	long	last;
+	long	timestamp;
+
+	pthread_mutex_lock(&sim->state_mutex);
+	last = sim->coders[i].last_compile_time;
+	pthread_mutex_unlock(&sim->state_mutex);
+	if (now - last > sim->params.time_to_burnout)
+	{
+		stop_simulation(sim);
+		timestamp = get_time_ms() - sim->start_time;
+		usleep(1000);
+		printf("%ld %d %s\n", timestamp, sim->coders[i].id, "burned out");
+		return (1);
+	}
+	return (0);
 }
 
 void	*monitor_routine(void *arg)
@@ -63,10 +67,7 @@ void	*monitor_routine(void *arg)
 		while (i < sim->params.nb_coders)
 		{
 			if (check_burnout(sim, i, now) != 0)
-			{
-				stop_simulation(sim);
 				return (NULL);
-			}
 			i++;
 		}
 		usleep(500);
