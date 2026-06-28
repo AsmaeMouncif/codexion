@@ -94,7 +94,7 @@ make re      # full rebuild
 **Deadlock prevention:**
 Coders always acquire their left dongle before their right dongle. The last coder
 (number N) acquires in reverse order (right before left), breaking the circular
-wait — one of Coffman's four necessary conditions for deadlock. This ensures the
+wait one of Coffman's four necessary conditions for deadlock. This ensures the
 cycle is never closed.
  
 Even-numbered coders also sleep 1 ms at startup (`usleep(1000)`), staggering
@@ -103,9 +103,9 @@ moment.
  
 **Starvation prevention:**
 The scheduler enforces fair access to each dongle via a priority queue (min-heap).
-- `fifo`: requests are served in arrival order — no coder waits indefinitely.
+- `fifo`: requests are served in arrival order no coder waits indefinitely.
 - `edf`: requests are served by earliest burnout deadline, prioritizing the coder
-  most at risk — prevents starvation under time pressure.
+  most at risk prevents starvation under time pressure.
 
 **Cooldown handling:**
 After a dongle is released, it is unavailable for `dongle_cooldown` milliseconds.
@@ -160,4 +160,4 @@ The mutex ensures the monitor always reads a consistent value.
   *(Implementation reference for priority queue used in fifo and edf schedulers)*
 
 **AI usage:**
-- NOT used for: Core algorithm implementation, main synchronization logic, or critical sections
+During this project, I used AI as a learning and support tool to ask general questions when we were stuck not to generate code. I always read and understood the answers before applying anything myself.
