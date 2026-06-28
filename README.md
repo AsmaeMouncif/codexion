@@ -160,4 +160,5 @@ The mutex ensures the monitor always reads a consistent value.
   *(Implementation reference for priority queue used in fifo and edf schedulers)*
 
 **AI usage:**
-During this project, I used AI as a learning and support tool to ask general questions when we were stuck not to generate code. I always read and understood the answers before applying anything myself.
+
+During this project, I used AI as a learning and support tool to ask general questions when I get stuck not to generate code. I always read and understood the answers before applying anything myself.
